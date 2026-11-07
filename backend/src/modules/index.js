@@ -4,6 +4,8 @@ const router = express.Router();
 
 router.use(require('./auth/routes'));
 router.use(require('./sites/routes'));
+router.use(require('./guards/routes'));
+router.use(require('./settings/routes'));
 router.use(require('./roster/routes'));
 router.use(require('./attendance/routes'));
 router.use(require('./patrol/routes'));
