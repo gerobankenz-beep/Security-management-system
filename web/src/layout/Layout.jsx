@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { NAV_ITEMS, ROLES } from '../auth/roles';
 import { USE_MOCKS } from '../api/client';
+import OfflineBanner from '../components/OfflineBanner';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -28,6 +29,7 @@ export default function Layout() {
             <button className="btn" onClick={logout}>Log out</button>
           </div>
         </header>
+        <OfflineBanner />
         <main className="content"><Outlet /></main>
       </div>
     </div>

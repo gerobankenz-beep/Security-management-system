@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import * as authApi from '../api/auth';
 import { clearToken, getToken, setToken, setUnauthorizedHandler } from '../api/client';
+import { clearCache } from '../hooks/cache';
 
 const AuthContext = createContext(null);
 const USER_KEY = 'patrol_user';
@@ -13,6 +14,7 @@ export function AuthProvider({ children }) {
   const clearSession = useCallback(() => {
     clearToken();
     localStorage.removeItem(USER_KEY);
+    clearCache(); // do not leave saved data behind on a shared computer
     setUser(null);
   }, []);
 

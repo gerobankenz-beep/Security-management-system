@@ -5,6 +5,9 @@ import { mockRequest } from '../mocks';
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
 export const USE_MOCKS = String(import.meta.env.VITE_USE_MOCKS) === 'true';
 
+// Give up on a request after this long, so a wrong address never leaves the screen on "Loading..." forever.
+const TIMEOUT_MS = Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS) || 10000;
+
 const TOKEN_KEY = 'patrol_token';
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
@@ -33,7 +36,7 @@ export async function request(path, { method = 'GET', body, query } = {}) {
         return await mockRequest({ method, path, body, query, token });
       } catch (e) {
         // Turn the mock's error into the same ApiError the real backend would produce.
-        if (e.isMock) throw new ApiError(e.status, e.code, e.message);
+        if (e.isMock) throw new ApiError(e.status, e.code, e.message, e.details);
         throw e;
       }
     }
@@ -43,6 +46,8 @@ export async function request(path, { method = 'GET', body, query } = {}) {
       if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, value);
     });
 
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
     let res;
     try {
       res = await fetch(url, {
@@ -52,9 +57,15 @@ export async function request(path, { method = 'GET', body, query } = {}) {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
       });
-    } catch {
-      throw new ApiError(0, 'NETWORK_ERROR', 'Cannot reach the server. Is the backend running?');
+    } catch (e) {
+      if (e.name === 'AbortError') {
+        throw new ApiError(0, 'TIMEOUT', `No answer from ${API_URL} after ${TIMEOUT_MS / 1000} seconds. Check VITE_API_URL in .env and that the backend is running.`);
+      }
+      throw new ApiError(0, 'NETWORK_ERROR', `Cannot reach the server at ${API_URL}. Is the backend running?`);
+    } finally {
+      clearTimeout(timer);
     }
 
     if (res.status === 204) return null;

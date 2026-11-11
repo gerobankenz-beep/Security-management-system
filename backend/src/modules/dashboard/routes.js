@@ -4,9 +4,9 @@ const express = require('express');
 const { stub } = require('../../utils/stub');
 const router = express.Router();
 
-stub(router, 'get', '/dashboard/overview', ['ops_manager', 'supervisor']);
-stub(router, 'get', '/dashboard/sites/:id/status', ['ops_manager', 'supervisor']);
-stub(router, 'get', '/reports/patrol-compliance', ['ops_manager', 'supervisor']);
-stub(router, 'get', '/reports/proof-of-service', ['client', 'ops_manager']);
+stub(router, 'get', '/dashboard/overview', ['admin', 'ops_manager', 'supervisor']);
+stub(router, 'get', '/dashboard/sites/:id/status', ['admin', 'ops_manager', 'supervisor']);
+stub(router, 'get', '/reports/patrol-compliance', ['admin', 'ops_manager', 'supervisor']);
+stub(router, 'get', '/reports/proof-of-service', ['admin', 'client', 'ops_manager']);
 
 module.exports = router;

@@ -1,48 +1,26 @@
 // A tiny fake backend that lives in the browser. It follows the API contract so screens can be
 // built before the real endpoints exist. Add a route here when you start a new screen.
 import * as data from './data';
+import { MockError, page } from './util';
+import { adminRoutes, resetAdminMocks } from './admin';
 
 const LATENCY = Number(import.meta.env.VITE_MOCK_LATENCY ?? 250);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Local copy of the error class (client.js imports this file, so it cannot be imported back).
-class MockError extends Error {
-  constructor(status, code, message) {
-    super(message);
-    this.status = status;
-    this.code = code;
-    this.isMock = true;
-  }
-}
-
 const tokenFor = (user) => `mock-token-${user.id}`;
 const userFromToken = (token) => data.users.find((u) => tokenFor(u) === token);
-
-function page(rows, query = {}) {
-  const per = Number(query.per_page) || 20;
-  const current = Number(query.page) || 1;
-  return { data: rows.slice((current - 1) * per, current * per), meta: { page: current, per_page: per, total: rows.length } };
-}
 
 const publicUser = ({ id, full_name, email, phone, role, client_id, is_active }) =>
   ({ id, full_name, email, phone, role, client_id, is_active });
 
 // [method, path pattern, allowed roles (empty = any logged-in user), handler]
 const routes = [
+  ...adminRoutes,
   ['GET', '/users', ['admin'], ({ query }) => {
     const rows = data.users.filter((u) => !query?.role || u.role === query.role).map(publicUser);
     return page(rows, query);
   }],
   ['GET', '/audit-logs', ['admin'], ({ query }) => page(data.auditLogs, query)],
-  ['GET', '/sites', [], ({ user, query }) => {
-    const rows = user.role === 'client' ? data.sites.filter((s) => s.client_id === user.client_id) : data.sites;
-    return page(rows, query);
-  }],
-  ['GET', '/sites/:id', [], ({ user, params }) => {
-    const site = data.sites.find((s) => s.id === Number(params.id));
-    if (!site || (user.role === 'client' && site.client_id !== user.client_id)) throw new MockError(404, 'NOT_FOUND', `Site ${params.id} not found`);
-    return { data: site };
-  }],
   ['GET', '/dashboard/overview', ['ops_manager', 'supervisor', 'admin'], () => ({ data: data.overview })],
   ['GET', '/dashboard/sites/:id/status', ['ops_manager', 'supervisor', 'admin'], () => ({ data: data.siteStatus })],
   ['GET', '/reports/patrol-compliance', ['ops_manager', 'supervisor', 'admin'], () => ({ data: data.compliance })],
@@ -56,6 +34,8 @@ function match(pattern, path) {
   if (!m) return null;
   return Object.fromEntries(names.map((n, i) => [n, m[i + 1]]));
 }
+
+export function resetMocks() { resetAdminMocks(); }
 
 export async function mockRequest({ method, path, body, query, token }) {
   await sleep(LATENCY);
@@ -77,7 +57,8 @@ export async function mockRequest({ method, path, body, query, token }) {
     const params = match(pattern, path);
     if (!params) continue;
     if (roles.length > 0 && !roles.includes(user.role)) throw new MockError(403, 'FORBIDDEN', `Role '${user.role}' cannot access this`);
-    return handler({ user, params, query, body });
+    const result = await handler({ user, params, query, body });
+    return result && result.status ? { data: result.data } : result;
   }
   throw new MockError(501, 'NOT_IMPLEMENTED', `No mock for ${method} ${path} yet. Add one in src/mocks/index.js`);
 }

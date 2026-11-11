@@ -7,6 +7,13 @@ import Layout from './layout/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Sites from './pages/Sites';
+import SiteForm from './pages/SiteForm';
+import SiteDetail from './pages/SiteDetail';
+import PrintQr from './pages/PrintQr';
+import Guards from './pages/Guards';
+import GuardForm from './pages/GuardForm';
+import Clients from './pages/Clients';
+import Settings from './pages/Settings';
 import Users from './pages/Users';
 import AuditLogs from './pages/AuditLogs';
 import MobileOnly from './pages/MobileOnly';
@@ -30,6 +37,15 @@ export default function App() {
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/" element={<Home />} />
         <Route path="/sites" element={<ProtectedRoute roles={[...STAFF, 'client']}><Sites /></ProtectedRoute>} />
+        <Route path="/sites/new" element={<ProtectedRoute roles={['admin']}><SiteForm /></ProtectedRoute>} />
+        <Route path="/sites/:id" element={<ProtectedRoute roles={[...STAFF, 'client']}><SiteDetail /></ProtectedRoute>} />
+        <Route path="/sites/:id/edit" element={<ProtectedRoute roles={['admin']}><SiteForm /></ProtectedRoute>} />
+        <Route path="/sites/:id/qr" element={<ProtectedRoute roles={['admin', 'ops_manager']}><PrintQr /></ProtectedRoute>} />
+        <Route path="/guards" element={<ProtectedRoute roles={['admin']}><Guards /></ProtectedRoute>} />
+        <Route path="/guards/new" element={<ProtectedRoute roles={['admin']}><GuardForm /></ProtectedRoute>} />
+        <Route path="/guards/:id" element={<ProtectedRoute roles={['admin']}><GuardForm /></ProtectedRoute>} />
+        <Route path="/clients" element={<ProtectedRoute roles={['admin']}><Clients /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute roles={['admin']}><Settings /></ProtectedRoute>} />
         <Route path="/rosters" element={<ProtectedRoute roles={STAFF}><Rosters /></ProtectedRoute>} />
         <Route path="/attendance" element={<ProtectedRoute roles={STAFF}><Attendance /></ProtectedRoute>} />
         <Route path="/flags" element={<ProtectedRoute roles={STAFF}><Flags /></ProtectedRoute>} />

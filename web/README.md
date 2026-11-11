@@ -5,7 +5,12 @@ The shell for the manager, supervisor, admin and client web app. It already has:
 - Login, logout, and a saved session (the token is kept in the browser's localStorage)
 - A menu that changes with the user's role, and pages protected by role
 - One API layer (`src/api/client.js`) with a **mock mode**, so you can build screens before the backend endpoints exist
-- Working screens: Dashboard, Sites, Users, Audit log. The rest are placeholders that list the endpoints to build.
+- Working screens: Dashboard (mock until the backend builds it), Sites, Users, Audit log, and the admin screens:
+  **Guards** (add, edit, search, deactivate, reset password, assign sites), **Clients**, **Sites** (add, edit, detail with
+  checkpoints, routes and people, **printable QR sheet**) and **Settings** (company rules, public holidays, shift templates).
+- Offline behaviour: an offline banner appears when the connection drops, and lists without pay data (sites, clients,
+  checkpoints, routes) show their last saved copy. Guards and pay data are never saved in the browser. Saved data is cleared on log out.
+- The remaining screens (Rosters, Attendance, Flags, Incidents, Reports) are placeholders that list the endpoints to build.
 
 ## Run it
 
