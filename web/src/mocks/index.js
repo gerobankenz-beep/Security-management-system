@@ -3,6 +3,7 @@
 import * as data from './data';
 import { MockError, page } from './util';
 import { adminRoutes, resetAdminMocks } from './admin';
+import { opsRoutes, resetOpsMocks } from './ops';
 
 const LATENCY = Number(import.meta.env.VITE_MOCK_LATENCY ?? 250);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -16,15 +17,14 @@ const publicUser = ({ id, full_name, email, phone, role, client_id, is_active })
 // [method, path pattern, allowed roles (empty = any logged-in user), handler]
 const routes = [
   ...adminRoutes,
+  ...opsRoutes,
   ['GET', '/users', ['admin'], ({ query }) => {
     const rows = data.users.filter((u) => !query?.role || u.role === query.role).map(publicUser);
     return page(rows, query);
   }],
   ['GET', '/audit-logs', ['admin'], ({ query }) => page(data.auditLogs, query)],
-  ['GET', '/dashboard/overview', ['ops_manager', 'supervisor', 'admin'], () => ({ data: data.overview })],
   ['GET', '/dashboard/sites/:id/status', ['ops_manager', 'supervisor', 'admin'], () => ({ data: data.siteStatus })],
   ['GET', '/reports/patrol-compliance', ['ops_manager', 'supervisor', 'admin'], () => ({ data: data.compliance })],
-  ['GET', '/flags', ['ops_manager', 'supervisor', 'admin'], ({ query }) => page(data.flags, query)],
 ];
 
 function match(pattern, path) {
@@ -35,7 +35,7 @@ function match(pattern, path) {
   return Object.fromEntries(names.map((n, i) => [n, m[i + 1]]));
 }
 
-export function resetMocks() { resetAdminMocks(); }
+export function resetMocks() { resetAdminMocks(); resetOpsMocks(); }
 
 export async function mockRequest({ method, path, body, query, token }) {
   await sleep(LATENCY);

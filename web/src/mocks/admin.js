@@ -49,6 +49,7 @@ export function resetAdminMocks() {
   state.sites.forEach((s) => data.sites.push(s));
 }
 resetAdminMocks();
+export const adminState = () => state;
 
 const guardView = (u) => ({
   id: u.id, full_name: u.full_name, email: u.email, phone: u.phone, employee_no: state.employee[u.id] || null, is_active: u.is_active,

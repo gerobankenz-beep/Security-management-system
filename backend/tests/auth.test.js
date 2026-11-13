@@ -85,7 +85,7 @@ test('sites are scoped by role: guard sees own site, client sees own site', asyn
 
 test('stub endpoints answer 501 so owners know what to build', async () => {
   const token = await api.login('manager@example.com');
-  const res = await api.request('/rosters', { token });
+  const res = await api.request('/rosters/1/auto-fill', { method: 'POST', token });
   assert.strictEqual(res.status, 501);
   assert.strictEqual(res.body.error.code, 'NOT_IMPLEMENTED');
 });
@@ -95,3 +95,4 @@ test('unknown route gives 404 in the standard error shape', async () => {
   assert.strictEqual(res.status, 404);
   assert.strictEqual(res.body.error.code, 'NOT_FOUND');
 });
+

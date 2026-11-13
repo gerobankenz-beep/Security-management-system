@@ -8,13 +8,13 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "node --test",
-    "set-passwords": "node scripts/set-passwords.js"
+    "set-passwords": "node scripts/set-passwords.js",
+    "demo:flow": "node scripts/demo-flow.js"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -24,6 +24,6 @@
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.4"
   }
 }

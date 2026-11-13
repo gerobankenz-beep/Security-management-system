@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext';
 import { NAV_ITEMS, ROLES } from '../auth/roles';
 import { USE_MOCKS } from '../api/client';
 import OfflineBanner from '../components/OfflineBanner';
+import NotificationBell from '../components/NotificationBell';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -24,6 +25,7 @@ export default function Layout() {
         <header className="topbar">
           <div>{USE_MOCKS && <span className="badge badge-warn">Mock data</span>}</div>
           <div className="user-box">
+            <NotificationBell />
             <span>{user.full_name}</span>
             <span className="badge">{ROLES[user.role] || user.role}</span>
             <button className="btn" onClick={logout}>Log out</button>

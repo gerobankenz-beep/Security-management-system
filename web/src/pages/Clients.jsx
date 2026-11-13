@@ -45,7 +45,7 @@ export default function Clients() {
 
   return (
     <>
-      <PageHeader title="Clients" subtitle="Our Clients" actions={<button className="btn btn-primary" onClick={() => open(null)}>Add client</button>} />
+      <PageHeader title="Clients" subtitle="Companies that buy security" actions={<button className="btn btn-primary" onClick={() => open(null)}>Add client</button>} />
       {message && <div className="success-box" role="status">{message}</div>}
       <StaleNotice at={staleAt} />
       {editing && (

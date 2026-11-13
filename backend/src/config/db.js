@@ -6,6 +6,8 @@ const env = require('./env');
 // Convert them to JavaScript numbers so latitude, counts and ids behave as expected.
 types.setTypeParser(1700, (value) => parseFloat(value));
 types.setTypeParser(20, (value) => parseInt(value, 10));
+// DATE columns stay plain 'YYYY-MM-DD' strings. (By default pg turns them into Dates in the computer's time zone, which causes off-by-one-day bugs.)
+types.setTypeParser(1082, (value) => value);
 
 const pool = new Pool({ connectionString: env.databaseUrl });
 

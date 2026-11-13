@@ -4,7 +4,7 @@ const assert = require('node:assert');
 const { startServer } = require('./helpers');
 
 let api; let admin; let manager; let guardTok; let supervisorTok;
-const stamp = Date.now();
+const stamp = Date.now() * 1000 + Math.floor(Math.random() * 1000);
 const ctx = {};
 
 before(async () => {
@@ -236,3 +236,4 @@ test('every admin change is written to the audit log', async () => {
   const types = new Set(res.body.data.map((r) => r.entity_type));
   for (const t of ['guard', 'client', 'site', 'checkpoint', 'route', 'settings']) assert.ok(types.has(t), `missing audit entry for ${t}`);
 });
+

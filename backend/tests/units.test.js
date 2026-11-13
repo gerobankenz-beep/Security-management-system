@@ -11,3 +11,4 @@ test('distanceMetres: two seed checkpoints are about 94 m apart', () => {
   const d = distanceMetres(0.3349, 32.5925, 0.3343, 32.5919);
   assert.ok(d > 90 && d < 98, `got ${d}`);
 });
+
