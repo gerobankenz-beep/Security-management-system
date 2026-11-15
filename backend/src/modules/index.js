@@ -14,5 +14,6 @@ router.use(require('./dashboard/routes'));
 router.use(require('./incidents/routes'));
 router.use(require('./reports/routes'));
 router.use(require('./payroll/routes'));
+router.use(require('./jobs/routes'));
 
 module.exports = router;
