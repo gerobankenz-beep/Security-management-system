@@ -4,6 +4,7 @@ import * as data from './data';
 import { MockError, page } from './util';
 import { adminRoutes, resetAdminMocks } from './admin';
 import { opsRoutes, resetOpsMocks } from './ops';
+import { reportRoutes, resetReportMocks } from './reports';
 
 const LATENCY = Number(import.meta.env.VITE_MOCK_LATENCY ?? 250);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -18,6 +19,7 @@ const publicUser = ({ id, full_name, email, phone, role, client_id, is_active })
 const routes = [
   ...adminRoutes,
   ...opsRoutes,
+  ...reportRoutes,
   ['GET', '/users', ['admin'], ({ query }) => {
     const rows = data.users.filter((u) => !query?.role || u.role === query.role).map(publicUser);
     return page(rows, query);
@@ -35,7 +37,7 @@ function match(pattern, path) {
   return Object.fromEntries(names.map((n, i) => [n, m[i + 1]]));
 }
 
-export function resetMocks() { resetAdminMocks(); resetOpsMocks(); }
+export function resetMocks() { resetAdminMocks(); resetOpsMocks(); resetReportMocks(); }
 
 export async function mockRequest({ method, path, body, query, token }) {
   await sleep(LATENCY);

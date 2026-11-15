@@ -12,5 +12,7 @@ router.use(require('./patrol/routes'));
 router.use(require('./anomaly/routes'));
 router.use(require('./dashboard/routes'));
 router.use(require('./incidents/routes'));
+router.use(require('./reports/routes'));
+router.use(require('./payroll/routes'));
 
 module.exports = router;

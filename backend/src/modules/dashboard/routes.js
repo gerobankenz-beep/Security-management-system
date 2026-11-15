@@ -15,6 +15,5 @@ router.get('/dashboard/sites/:id/status', authenticate, requireRole(...STAFF), a
 
 // ---- Reports: built in area 6 ----
 stub(router, 'get', '/reports/patrol-compliance', ['admin', 'ops_manager', 'supervisor']);
-stub(router, 'get', '/reports/proof-of-service', ['admin', 'client', 'ops_manager']);
 
 module.exports = router;

@@ -18,6 +18,7 @@ export const NAV_ITEMS = [
   { to: '/flags', label: 'Patrol flags', roles: ['admin', 'ops_manager', 'supervisor'] },
   { to: '/incidents', label: 'Incidents', roles: ['admin', 'ops_manager', 'supervisor'] },
   { to: '/reports', label: 'Reports', roles: ['admin', 'ops_manager', 'supervisor', 'client'] },
+  { to: '/payroll', label: 'Payroll', roles: ['admin'] },
   { to: '/users', label: 'Users', roles: ['admin'] },
   { to: '/audit-logs', label: 'Audit log', roles: ['admin'] },
   { to: '/settings', label: 'Settings', roles: ['admin'] },

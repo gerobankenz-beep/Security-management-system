@@ -22,7 +22,21 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Patrol to use the camera to scan checkpoint QR codes",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Patrol to record where you are when you check in and scan"
+        }
+      ],
+      "expo-status-bar"
     ]
   }
 }

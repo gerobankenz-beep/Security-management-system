@@ -22,7 +22,9 @@ import Rosters from './pages/Rosters';
 import RosterBuilder from './pages/RosterBuilder';
 import Attendance from './pages/Attendance';
 import Flags from './pages/Flags';
-import { Incidents, Reports } from './pages/Placeholders';
+import { Incidents } from './pages/Placeholders';
+import Reports from './pages/Reports';
+import Payroll from './pages/Payroll';
 
 const STAFF = ['admin', 'ops_manager', 'supervisor'];
 
@@ -56,6 +58,7 @@ export default function App() {
         <Route path="/flags" element={<ProtectedRoute roles={STAFF}><Flags /></ProtectedRoute>} />
         <Route path="/incidents" element={<ProtectedRoute roles={STAFF}><Incidents /></ProtectedRoute>} />
         <Route path="/reports" element={<ProtectedRoute roles={[...STAFF, 'client']}><Reports /></ProtectedRoute>} />
+        <Route path="/payroll" element={<ProtectedRoute roles={['admin']}><Payroll /></ProtectedRoute>} />
         <Route path="/users" element={<ProtectedRoute roles={['admin']}><Users /></ProtectedRoute>} />
         <Route path="/audit-logs" element={<ProtectedRoute roles={['admin']}><AuditLogs /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
