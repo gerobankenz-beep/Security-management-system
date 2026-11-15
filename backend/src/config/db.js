@@ -9,7 +9,7 @@ types.setTypeParser(20, (value) => parseInt(value, 10));
 // DATE columns stay plain 'YYYY-MM-DD' strings. (By default pg turns them into Dates in the computer's time zone, which causes off-by-one-day bugs.)
 types.setTypeParser(1082, (value) => value);
 
-const pool = new Pool({ connectionString: env.databaseUrl });
+const pool = new Pool({ connectionString: env.databaseUrl, ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : undefined });
 
 // Always use placeholders ($1, $2 ...) for values. Never build SQL by joining strings,
 // otherwise attackers can inject their own SQL.
