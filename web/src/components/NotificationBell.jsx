@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Bell } from 'lucide-react';
 import { listNotifications, markNotification } from '../api/notifications';
 import { useApi } from '../hooks/useApi';
 import { fmtDateTime } from '../lib/format';
@@ -28,7 +29,7 @@ export default function NotificationBell() {
   return (
     <div className="bell">
       <button type="button" className="btn" aria-label={`Notifications, ${unread} unread`} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        Alerts{unread > 0 && <span className="bell-count">{unread}</span>}
+        <Bell size={16} aria-hidden="true" />Alerts{unread > 0 && <span className="bell-count">{unread}</span>}
       </button>
       {open && (
         <div className="bell-panel" role="region" aria-label="Notification list">

@@ -15,6 +15,7 @@ import Tabs from '../components/Tabs';
 import Loading from '../components/Loading';
 import ErrorBox from '../components/ErrorBox';
 import StaleNotice from '../components/StaleNotice';
+import { Download } from 'lucide-react';
 
 function WeekPicker({ week, setWeek }) {
   return (
@@ -52,7 +53,7 @@ function Weekly({ week }) {
               {(sites.data || []).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </FormField>
-          <button className="btn btn-primary" onClick={exportCsv}>Export CSV</button>
+          <button className="btn btn-primary" onClick={exportCsv}><Download size={16} aria-hidden="true" />Export CSV</button>
         </div>
         {msg && <div className="error-box" role="alert">{msg}</div>}
       </div>

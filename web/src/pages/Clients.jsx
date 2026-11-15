@@ -9,6 +9,7 @@ import FormField from '../components/FormField';
 import StaleNotice from '../components/StaleNotice';
 import Loading from '../components/Loading';
 import ErrorBox from '../components/ErrorBox';
+import { Plus } from 'lucide-react';
 
 const EMPTY = { name: '', contact_name: '', contact_phone: '', contact_email: '' };
 
@@ -45,7 +46,7 @@ export default function Clients() {
 
   return (
     <>
-      <PageHeader title="Clients" subtitle="Companies that buy security" actions={<button className="btn btn-primary" onClick={() => open(null)}>Add client</button>} />
+      <PageHeader title="Clients" subtitle="Companies that buy security" actions={<button className="btn btn-primary" onClick={() => open(null)}><Plus size={16} aria-hidden="true" />Add client</button>} />
       {message && <div className="success-box" role="status">{message}</div>}
       <StaleNotice at={staleAt} />
       {editing && (

@@ -9,6 +9,7 @@ import DataTable from '../components/DataTable';
 import Pagination from '../components/Pagination';
 import Loading from '../components/Loading';
 import ErrorBox from '../components/ErrorBox';
+import { Plus } from 'lucide-react';
 
 export default function Guards() {
   const [page, setPage] = useState(1);
@@ -20,7 +21,7 @@ export default function Guards() {
 
   return (
     <>
-      <PageHeader title="Guards" subtitle="Everyone who works shifts" actions={<Link className="btn btn-primary" to="/guards/new">Add guard</Link>} />
+      <PageHeader title="Guards" subtitle="Everyone who works shifts" actions={<Link className="btn btn-primary" to="/guards/new"><Plus size={16} aria-hidden="true" />Add guard</Link>} />
       <div className="card">
         <form className="inline-form" onSubmit={(e) => { e.preventDefault(); setPage(1); setSearch(text.trim()); }}>
           <div className="field">

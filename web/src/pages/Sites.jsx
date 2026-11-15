@@ -10,6 +10,7 @@ import Pagination from '../components/Pagination';
 import StaleNotice from '../components/StaleNotice';
 import Loading from '../components/Loading';
 import ErrorBox from '../components/ErrorBox';
+import { Plus } from 'lucide-react';
 
 export default function Sites() {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ export default function Sites() {
   return (
     <>
       <PageHeader title="Sites" subtitle="Locations covered by guards"
-        actions={isAdmin ? <Link className="btn btn-primary" to="/sites/new">Add site</Link> : null} />
+        actions={isAdmin ? <Link className="btn btn-primary" to="/sites/new"><Plus size={16} aria-hidden="true" />Add site</Link> : null} />
       <StaleNotice at={staleAt} />
       {isAdmin && (
         <label className="no-print" style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>

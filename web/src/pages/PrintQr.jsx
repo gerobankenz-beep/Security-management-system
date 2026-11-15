@@ -5,6 +5,7 @@ import { useApi } from '../hooks/useApi';
 import PageHeader from '../components/PageHeader';
 import Loading from '../components/Loading';
 import ErrorBox from '../components/ErrorBox';
+import { Printer } from 'lucide-react';
 
 export default function PrintQr() {
   const { id } = useParams();
@@ -14,7 +15,7 @@ export default function PrintQr() {
     <>
       <div className="no-print">
         <PageHeader title={data ? `QR sheet: ${data.site.name}` : 'QR sheet'} subtitle="Print this page and fix each code at its checkpoint"
-          actions={<><Link className="btn" to={`/sites/${id}`}>Back to site</Link> <button className="btn btn-primary" onClick={() => window.print()}>Print</button></>} />
+          actions={<><Link className="btn" to={`/sites/${id}`}>Back to site</Link> <button className="btn btn-primary" onClick={() => window.print()}><Printer size={16} aria-hidden="true" />Print</button></>} />
       </div>
       {data && <h2 className="print-title" style={{ display: 'none' }}>{data.site.name}</h2>}
       {loading && <Loading />}

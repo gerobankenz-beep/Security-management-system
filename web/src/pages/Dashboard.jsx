@@ -8,6 +8,7 @@ import StatCard from '../components/StatCard';
 import DataTable from '../components/DataTable';
 import Loading from '../components/Loading';
 import ErrorBox from '../components/ErrorBox';
+import { CalendarDays, ClipboardCheck, Flag, RefreshCw } from 'lucide-react';
 
 const REFRESH_MS = 30000;
 const needsAttention = (s) => s.rounds_missed > 0 || s.open_flags > 0 || s.guards_on_duty < s.guards_required;
@@ -25,7 +26,7 @@ export default function Dashboard() {
   return (
     <>
       <PageHeader title="Dashboard" subtitle={data ? `Today: ${data.date}${updatedAt ? `, updated ${updatedAt.toLocaleTimeString('en-GB')}` : ''}` : 'Live status across your sites'}
-        actions={<button className="btn" onClick={reload}>Refresh</button>} />
+        actions={<button className="btn" onClick={reload}><RefreshCw size={15} aria-hidden="true" />Refresh</button>} />
       {loading && !data && <Loading />}
       <ErrorBox error={error} onRetry={reload} />
       {data && (
@@ -40,9 +41,9 @@ export default function Dashboard() {
           <div className="card" aria-label="Quick links">
             <h2>Quick links</h2>
             <div className="row-actions">
-              <Link className="btn" to="/rosters">Rosters</Link>
-              <Link className="btn" to="/attendance">Attendance</Link>
-              <Link className="btn" to="/flags">Flags to review ({data.open_flags})</Link>
+              <Link className="btn" to="/rosters"><CalendarDays size={16} aria-hidden="true" />Rosters</Link>
+              <Link className="btn" to="/attendance"><ClipboardCheck size={16} aria-hidden="true" />Attendance</Link>
+              <Link className="btn" to="/flags"><Flag size={16} aria-hidden="true" />Flags to review ({data.open_flags})</Link>
             </div>
           </div>
 
