@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { API_URL, USE_MOCKS } from '../config.js';
 import { Banner, Button } from '../components.jsx';
@@ -17,21 +17,22 @@ export default function LoginScreen() {
     if (!email.trim() || !password) { setError('Enter your email and password.'); return; }
     setBusy(true);
     try { await login(email, password); }
-    catch (e) { setError(e.network ? `Cannot reach the server at ${API_URL}. Check the address in .env and that the backend is running.` : e.message); }
+    catch (e) { setError(e.network ? (__DEV__ ? `Cannot reach the server at ${API_URL}. Check the address in .env and that the backend is running.` : 'Cannot reach the server. Check your internet connection and try again.') : e.message); }
     finally { setBusy(false); }
   }
 
   return (
     <KeyboardAvoidingView style={common.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }} keyboardShouldPersistTaps="handled">
-        <Text style={{ fontSize: 30, fontWeight: '800', color: colors.navy, marginBottom: 4 }}>Patrol</Text>
+        <Image source={require('../../assets/icon.png')} style={{ width: 72, height: 72, borderRadius: 18, marginBottom: 16 }} accessibilityLabel="The Nova Protective Systems logo" />
+        <Text style={{ fontSize: 28, fontWeight: '800', color: colors.navy, marginBottom: 4 }}>The Nova Protective Systems</Text>
         <Text style={[common.muted, { marginBottom: 24 }]}>Guard app: shifts, check-in and checkpoint scans</Text>
         {USE_MOCKS && <View style={{ marginBottom: 12 }}><Banner tone="warn">Demo mode: fake data, no server needed.</Banner></View>}
         <TextInput style={common.input} placeholder="Email" autoCapitalize="none" keyboardType="email-address" autoCorrect={false} value={email} onChangeText={setEmail} accessibilityLabel="Email" />
         <TextInput style={common.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} accessibilityLabel="Password" onSubmitEditing={submit} />
         {!!error && <Text style={{ color: colors.bad, marginBottom: 12 }} accessibilityRole="alert">{error}</Text>}
         <Button title="Sign in" onPress={submit} busy={busy} />
-        {!USE_MOCKS && <Text style={[common.muted, { marginTop: 12 }]}>Server: {API_URL}</Text>}
+        {!USE_MOCKS && __DEV__ && <Text style={[common.muted, { marginTop: 12 }]}>Server: {API_URL}</Text>}
       </ScrollView>
     </KeyboardAvoidingView>
   );

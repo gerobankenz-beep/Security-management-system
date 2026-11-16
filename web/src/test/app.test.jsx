@@ -85,6 +85,6 @@ describe('api client (mock mode)', () => {
   it('answers 501 for endpoints that have no mock yet', async () => {
     const { data } = await request('/auth/login', { method: 'POST', body: { email: 'admin@example.com', password: 'Password123!' } });
     localStorage.setItem('patrol_token', data.token);
-    await expect(request('/incidents')).rejects.toMatchObject({ status: 501 });
+    await expect(request('/incidents/1/photos', { method: 'POST' })).rejects.toMatchObject({ status: 501 });
   });
 });

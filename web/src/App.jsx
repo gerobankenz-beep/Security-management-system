@@ -22,7 +22,7 @@ import Rosters from './pages/Rosters';
 import RosterBuilder from './pages/RosterBuilder';
 import Attendance from './pages/Attendance';
 import Flags from './pages/Flags';
-import { Incidents } from './pages/Placeholders';
+import Incidents from './pages/Incidents';
 import Reports from './pages/Reports';
 import Payroll from './pages/Payroll';
 

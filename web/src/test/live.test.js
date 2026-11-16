@@ -28,7 +28,7 @@ describe.skipIf(USE_MOCKS)('real backend', () => {
     await expect(request('/auth/login', { method: 'POST', body: { email: 'admin@example.com', password: 'bad-password' } }))
       .rejects.toMatchObject({ status: 401, code: 'UNAUTHENTICATED' });
     await as('manager@example.com');
-    await expect(request('/incidents')).rejects.toMatchObject({ status: 501, code: 'NOT_IMPLEMENTED' });
+    await expect(request('/reports/patrol-compliance')).rejects.toMatchObject({ status: 501, code: 'NOT_IMPLEMENTED' });
   });
 
   it('admin flow through the same functions the screens use: guard, client, site, checkpoints, route, QR sheet', async () => {
