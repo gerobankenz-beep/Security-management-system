@@ -27,10 +27,10 @@ function Drawer({ line, onClose }) {
     <div className="card" aria-label="Pay calculation">
       <div className="page-header"><h2>{line.name} ({line.employee_no}) shift by shift</h2><button className="btn" onClick={onClose}>Close</button></div>
       <DataTable rows={line.shifts.map((s) => ({ ...s, id: s.shift_id }))} empty="No paid shifts."
-        columns={[{ key: 'shift_date', label: 'Shift', render: (s) => dayName(s.shift_date) }, { key: 'paid_minutes', label: 'Paid', render: (s) => mins(s.paid_minutes) },
-          { key: 'regular_minutes', label: 'Regular', render: (s) => mins(s.regular_minutes) }, { key: 'overtime_minutes', label: 'Overtime', render: (s) => mins(s.overtime_minutes) },
-          { key: 'holiday_minutes', label: 'Holiday', render: (s) => mins(s.holiday_minutes) }, { key: 'late_minutes', label: 'Late min' },
-          { key: 'night_allowance', label: 'Night allowance', render: (s) => ugx(s.night_allowance) }, { key: 'issue', label: 'Issue', render: (s) => (s.issue ? label(s.issue) : '') }]} />
+        columns={[{ key: 'shift_date', label: 'Shift', render: (s) => dayName(s.shift_date) }, { key: 'paid_minutes', align: 'right', label: 'Paid', render: (s) => mins(s.paid_minutes) },
+          { key: 'regular_minutes', align: 'right', label: 'Regular', render: (s) => mins(s.regular_minutes) }, { key: 'overtime_minutes', align: 'right', label: 'Overtime', render: (s) => mins(s.overtime_minutes) },
+          { key: 'holiday_minutes', align: 'right', label: 'Holiday', render: (s) => mins(s.holiday_minutes) }, { key: 'late_minutes', label: 'Late min' },
+          { key: 'night_allowance', align: 'right', label: 'Night allowance', render: (s) => ugx(s.night_allowance) }, { key: 'issue', label: 'Issue', render: (s) => (s.issue ? label(s.issue) : '') }]} />
       <dl className="details">
         <dt>Regular pay</dt><dd>{ugx(line.regular_pay)}</dd><dt>Overtime pay</dt><dd>{ugx(line.overtime_pay)}</dd><dt>Holiday pay</dt><dd>{ugx(line.holiday_pay)}</dd>
         <dt>Night allowance</dt><dd>{ugx(line.night_allowance)}</dd><dt>Additions</dt><dd>{ugx(line.additions)}</dd><dt>Gross</dt><dd>{ugx(line.gross)}</dd>
@@ -144,7 +144,7 @@ export default function Payroll() {
             <DataTable rows={run.lines.map((l) => ({ ...l, id: l.guard_id }))} empty="No paid shifts in this month."
               columns={[{ key: 'employee_no', label: 'No.' }, { key: 'name', label: 'Guard' }, { key: 'days_worked', label: 'Days' }, { key: 'paid_hours', label: 'Paid h' },
                 { key: 'overtime_hours', label: 'OT h' }, { key: 'holiday_hours', label: 'Holiday h' }, { key: 'night_shifts', label: 'Nights' },
-                { key: 'gross', label: 'Gross', render: (l) => ugx(l.gross) }, { key: 'deductions', label: 'Deductions', render: (l) => ugx(l.deductions) }, { key: 'net', label: 'Net', render: (l) => <strong>{ugx(l.net)}</strong> },
+                { key: 'gross', align: 'right', label: 'Gross', render: (l) => ugx(l.gross) }, { key: 'deductions', align: 'right', label: 'Deductions', render: (l) => ugx(l.deductions) }, { key: 'net', align: 'right', label: 'Net', render: (l) => <strong>{ugx(l.net)}</strong> },
                 { key: 'act', label: '', render: (l) => <button className="link-btn" onClick={() => setOpenLine(l)}>View {l.name}</button> }]} />
           </div>
           {openLine && <Drawer line={openLine} onClose={() => setOpenLine(null)} />}
@@ -152,7 +152,7 @@ export default function Payroll() {
             <h3>Adjustments this month</h3>
             <DataTable rows={run.adjustments} empty="No adjustments."
               columns={[{ key: 'guard_id', label: 'Guard', render: (a) => (guards.find((g) => g.guard_id === a.guard_id) || {}).name || `#${a.guard_id}` }, { key: 'type', label: 'Type', render: (a) => label(a.type) },
-                { key: 'amount_ugx', label: 'Amount', render: (a) => ugx(a.amount_ugx) }, { key: 'reason', label: 'Reason' }]} />
+                { key: 'amount_ugx', align: 'right', label: 'Amount', render: (a) => ugx(a.amount_ugx) }, { key: 'reason', label: 'Reason' }]} />
           </div>
         </>
       )}

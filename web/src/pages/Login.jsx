@@ -45,16 +45,23 @@ export default function Login() {
           <h1>{APP_NAME}</h1>
           <p>{APP_TAGLINE}. Know who is on duty, and know every round was walked.</p>
           <ul className="login-points">
-            <li><span className="pt-icon"><CalendarCheck size={19} aria-hidden="true" /></span>Rosters that follow rest and coverage rules</li>
-            <li><span className="pt-icon"><MapPinCheck size={19} aria-hidden="true" /></span>Checkpoint scans that prove patrols were walked</li>
-            <li><span className="pt-icon"><BellRing size={19} aria-hidden="true" /></span>Alerts for no-shows and missed rounds</li>
+            <li><span className="pt-icon"><CalendarCheck size={18} aria-hidden="true" /></span>Rosters that follow rest and coverage rules</li>
+            <li><span className="pt-icon"><MapPinCheck size={18} aria-hidden="true" /></span>Checkpoint scans that prove patrols were walked</li>
+            <li><span className="pt-icon"><BellRing size={18} aria-hidden="true" /></span>Alerts for no-shows and missed rounds</li>
           </ul>
+        </div>
+        <div className="login-preview" aria-hidden="true">
+          <div className="lp-head"><span>Tonight's coverage</span><em>Sample view</em></div>
+          <div className="lp-row"><span>Head office</span><b>4 / 4</b><i><u style={{ width: '100%' }} /></i></div>
+          <div className="lp-row"><span>Warehouse</span><b>3 / 4</b><i><u className="is-short" style={{ width: '75%' }} /></i></div>
+          <div className="lp-row"><span>North gate</span><b>2 / 2</b><i><u style={{ width: '100%' }} /></i></div>
         </div>
         <div className="login-foot">&copy; {new Date().getFullYear()} {APP_NAME}</div>
       </section>
 
       <section className="login-panel">
         <form className="login-card" onSubmit={handleSubmit}>
+          <span className="login-eyebrow">Operations portal</span>
           <h2>Welcome back</h2>
           <p className="muted">Sign in to your account to continue.</p>
 

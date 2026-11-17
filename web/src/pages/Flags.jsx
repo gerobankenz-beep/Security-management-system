@@ -1,5 +1,6 @@
 // Patrol flags: filter, look at the evidence, confirm or dismiss.
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getFlag, listFlags, reviewFlag } from '../api/flags';
 import { useApi } from '../hooks/useApi';
 import { fmtDateTime, fmtTime, label } from '../lib/format';
@@ -60,7 +61,8 @@ function FlagDetail({ id, onReviewed, onClose }) {
 
 export default function Flags() {
   const [status, setStatus] = useState('open');
-  const [rule, setRule] = useState('');
+  const [params] = useSearchParams();
+  const [rule, setRule] = useState(RULES.includes(params.get('rule')) ? params.get('rule') : '');
   const [pageNo, setPageNo] = useState(1);
   const [openId, setOpenId] = useState(null);
   const [message, setMessage] = useState('');

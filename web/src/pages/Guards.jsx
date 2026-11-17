@@ -48,8 +48,8 @@ export default function Guards() {
               { key: 'full_name', label: 'Name', render: (g) => <Link to={`/guards/${g.id}`}>{g.full_name}</Link> },
               { key: 'employee_no', label: 'Employee no' },
               { key: 'phone', label: 'Phone' },
-              { key: 'sites', label: 'Sites', render: (g) => g.site_ids.length },
-              { key: 'rate', label: 'Hourly rate', render: (g) => ugx(g.pay_profile && g.pay_profile.hourly_rate_ugx) },
+              { key: 'sites', align: 'right', label: 'Sites', render: (g) => g.site_ids.length },
+              { key: 'rate', align: 'right', label: 'Hourly rate', render: (g) => ugx(g.pay_profile && g.pay_profile.hourly_rate_ugx) },
               { key: 'status', label: 'Status', render: (g) => <span className={g.is_active ? 'badge badge-good' : 'badge pill-off'}>{g.is_active ? 'Active' : 'Inactive'}</span> },
             ]}
           />

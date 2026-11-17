@@ -28,12 +28,13 @@ export default function NotificationBell() {
 
   return (
     <div className="bell">
-      <button type="button" className="btn" aria-label={`Notifications, ${unread} unread`} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        <Bell size={16} aria-hidden="true" />Alerts{unread > 0 && <span className="bell-count">{unread}</span>}
+      <button type="button" className="icon-btn bell-btn" aria-label={`Notifications, ${unread} unread`} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <Bell size={18} aria-hidden="true" />{unread > 0 && <span className="bell-count">{unread}</span>}
       </button>
       {open && (
         <div className="bell-panel" role="region" aria-label="Notification list">
-          {(!data || data.length === 0) && <p className="muted">No notifications.</p>}
+          <div className="bell-title">Notifications</div>
+          {(!data || data.length === 0) && <p className="muted bell-empty">No notifications.</p>}
           <ul>
             {(data || []).map((n) => (
               <li key={n.id} className={n.is_read ? 'read' : 'unread'}>

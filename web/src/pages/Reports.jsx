@@ -75,7 +75,7 @@ function Weekly({ week }) {
             <DataTable rows={r.by_site} empty="No shifts or rounds this week."
               columns={[{ key: 'site_name', label: 'Site' }, { key: 'guards_on_duty', label: 'Guards' }, { key: 'rounds_expected', label: 'Rounds expected' },
                 { key: 'rounds_complete', label: 'Complete' }, { key: 'rounds_missed', label: 'Missed' },
-                { key: 'compliance_percent', label: 'Compliance', render: (x) => pctText(x.compliance_percent) }, { key: 'flags', label: 'Flags' }, { key: 'incidents', label: 'Incidents' }]} />
+                { key: 'compliance_percent', align: 'right', label: 'Compliance', render: (x) => pctText(x.compliance_percent) }, { key: 'flags', label: 'Flags' }, { key: 'incidents', label: 'Incidents' }]} />
           </div>
           <div className="card">
             <h3>By guard</h3>
@@ -86,7 +86,7 @@ function Weekly({ week }) {
           <div className="card">
             <h3>Missed checkpoints</h3>
             <DataTable rows={r.missed_checkpoints.map((m) => ({ ...m, id: m.round_id }))} empty="No missed checkpoints."
-              columns={[{ key: 'site_name', label: 'Site' }, { key: 'round_index', label: 'Round', render: (m) => m.round_index + 1 }, { key: 'checkpoints', label: 'Not scanned', render: (m) => m.checkpoints.join(', ') || '-' }]} />
+              columns={[{ key: 'site_name', label: 'Site' }, { key: 'round_index', align: 'right', label: 'Round', render: (m) => m.round_index + 1 }, { key: 'checkpoints', label: 'Not scanned', render: (m) => m.checkpoints.join(', ') || '-' }]} />
           </div>
           <div className="card">
             <h3>Flags and incidents</h3>
