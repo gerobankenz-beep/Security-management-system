@@ -56,10 +56,10 @@ export function resetOpsMocks() {
     const sh = { id: s.next.shift++, roster_id: 2, guard_id, shift_template_id: 1, date, ...shiftTimes(date, t[0]), status: 'scheduled' };
     s.shifts.push(sh);
     s.attendance.push({ id: sh.id, shift_id: sh.id, guard_id, site_id: 1, date, template_name: 'Day', scheduled_start: sh.start_at, scheduled_end: sh.end_at,
-      checked_in_at: sh.start_at, checked_out_at: sh.end_at, status: 'on_time', verification_status: 'verified', distance_from_site_m: 12, overtime_approved: false, late_minutes: 0, ...extra });
+      checked_in_at: sh.start_at, checked_out_at: sh.end_at, status: 'on_time', verification_status: 'verified', distance_from_site_m: 12, overtime_approved: false, late_minutes: 0, checkout_minutes: 0, checkout_status: 'on_time', ...extra });
   };
   mk2(4, today, {});
-  mk2(5, today, { status: 'late', late_minutes: 14, checked_in_at: new Date(Date.parse(shiftTimes(today, t[0]).start_at) + 14 * 60000).toISOString() });
+  mk2(5, today, { status: 'late', late_minutes: 14, checkout_minutes: 23, checkout_status: 'late', checked_in_at: new Date(Date.parse(shiftTimes(today, t[0]).start_at) + 14 * 60000).toISOString() });
   mk2(6, today, { status: 'no_show', checked_in_at: null, checked_out_at: null, verification_status: 'verified', distance_from_site_m: null });
 }
 

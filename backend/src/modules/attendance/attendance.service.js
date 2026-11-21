@@ -9,6 +9,7 @@ const { loadSettings } = require('../../utils/settings');
 const { distanceMetres } = require('../../utils/geo');
 const { notify } = require('../../utils/notify');
 const { siteScope, assertSiteAccess } = require('../sites/access');
+const { checkoutDiff } = require('./checkout');
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MIN = 60000;
@@ -117,7 +118,8 @@ async function checkOut(user, body) {
             check_out_event_id = $5, verification_status = $6 WHERE shift_id = $1 RETURNING *`,
     [shift.id, t, body.latitude ?? null, body.longitude ?? null, body.client_event_id, verification]);
   await query("UPDATE shifts SET status = 'completed' WHERE id = $1", [shift.id]);
-  return { duplicate: false, status: 200, data: view(rows[0], { duplicate: false }) };
+  const out = checkoutDiff(shift.end_at, t);
+  return { duplicate: false, status: 200, data: view(rows[0], { duplicate: false, checkout_minutes: out.minutes, checkout_status: out.status }) };
 }
 
 // ---- lists for managers and supervisors ----
@@ -142,7 +144,8 @@ async function listAttendance(user, { siteId, date, guardId, status, exceptionsO
   const total = (await query(`SELECT count(*) AS n FROM (${LIST_SELECT} ${filter}) x`, params)).rows[0].n;
   params.push(perPage, offset);
   const { rows } = await query(`${LIST_SELECT} ${filter} ORDER BY sh.start_at DESC, u.full_name LIMIT $${params.length - 1} OFFSET $${params.length}`, params);
-  return { rows, total };
+  // late_minutes = minutes after the scheduled start at check-in; checkout_minutes = minutes after (+) or before (-) the scheduled end at check-out
+  return { rows: rows.map((r) => { const out = checkoutDiff(r.scheduled_end, r.checked_out_at); return { ...r, checkout_minutes: out.minutes, checkout_status: out.status }; }), total };
 }
 
 // ---- corrections: always with a reason, always on the record ----

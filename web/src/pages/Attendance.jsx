@@ -13,6 +13,20 @@ import Loading from '../components/Loading';
 import ErrorBox from '../components/ErrorBox';
 
 const STATUS_TONE = { on_time: 'badge badge-good', late: 'badge badge-warn', no_show: 'badge badge-warn', pending: 'badge' };
+// Under the time: how far from the scheduled start (check-in) or end (check-out) the guard was.
+function InNote({ r }) {
+  if (!r.checked_in_at) return null;
+  const m = Math.round(Number(r.late_minutes) || 0);
+  if (m <= 0) return <span className="time-note ok">On time</span>;
+  return <span className={r.status === 'late' ? 'time-note warn' : 'time-note'}>{m} min late</span>;
+}
+function OutNote({ r }) {
+  if (!r.checked_out_at || r.checkout_minutes === null || r.checkout_minutes === undefined) return null;
+  const m = Number(r.checkout_minutes);
+  if (r.checkout_status === 'late') return <span className="time-note warn">{m} min after the end</span>;
+  if (r.checkout_status === 'early') return <span className="time-note warn">{Math.abs(m)} min early</span>;
+  return <span className="time-note ok">On time</span>;
+}
 const toIso = (local) => (local ? new Date(`${local}:00+03:00`).toISOString() : undefined); // the box holds Kampala time
 
 function CorrectionForm({ row, onDone, onCancel }) {
@@ -88,9 +102,9 @@ export default function Attendance() {
     { key: 'site_name', label: 'Site' },
     { key: 'template_name', label: 'Shift' },
     { key: 'scheduled', label: 'Scheduled', render: (r) => `${fmtTime(r.scheduled_start)} to ${fmtTime(r.scheduled_end)}` },
-    { key: 'in', label: 'In', render: (r) => fmtTime(r.checked_in_at) },
-    { key: 'out', label: 'Out', render: (r) => fmtTime(r.checked_out_at) },
-    { key: 'status', label: 'Status', render: (r) => <span className={STATUS_TONE[r.status] || 'badge'}>{label(r.status)}{r.status === 'late' && r.late_minutes ? ` (${r.late_minutes} min)` : ''}</span> },
+    { key: 'in', label: 'In', render: (r) => <>{fmtTime(r.checked_in_at)}<InNote r={r} /></> },
+    { key: 'out', label: 'Out', render: (r) => <>{fmtTime(r.checked_out_at)}<OutNote r={r} /></> },
+    { key: 'status', label: 'Status', render: (r) => <span className={STATUS_TONE[r.status] || 'badge'}>{label(r.status)}</span> },
     { key: 'verification_status', label: 'Location', render: (r) => (r.verification_status === 'pending_review' ? <span className="badge badge-warn">Needs review</span> : label(r.verification_status)) },
     // id 0 means nobody has checked in yet, so there is no attendance record to correct
     ...(canCorrect ? [{ key: 'act', label: '', render: (r) => (r.attendance_id

@@ -101,6 +101,15 @@ describe('attendance', () => {
   });
 });
 
+describe('attendance times', () => {
+  it('shows how late each check-in was and how far each check-out was from the end of the shift', async () => {
+    await openAs('manager@example.com', '/attendance');
+    expect(await screen.findByText('14 min late')).toBeInTheDocument();              // John arrived 14 minutes after the start
+    expect(screen.getByText('23 min after the end')).toBeInTheDocument();            // and left 23 minutes after the end
+    expect(screen.getAllByText('On time').length).toBeGreaterThan(0);
+  });
+});
+
 describe('attendance before anyone arrives', () => {
   it('shows a published shift with no check-in as pending and offers no correction yet', async () => {
     const user = await openAs('admin@example.com', '/attendance');

@@ -292,6 +292,8 @@ input[type='checkbox'], input[type='radio'] { width: 16px; min-height: 0; height
 
 /* ---------- link buttons, red log out, card tables on phones (added) ---------- */
 .btn { font-weight: 600; white-space: nowrap; }
+.time-note { display: block; margin-top: 2px; font-size: .74rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.time-note.ok { color: var(--good, #16794a); } .time-note.warn { color: var(--warn); }
 /* Stat cards that link to a page. */
 a.stat-card.is-link { text-decoration: none; color: inherit; cursor: pointer; transition: transform .15s, box-shadow .15s, border-color .15s; }
 a.stat-card.is-link:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--tone); }

@@ -117,9 +117,10 @@ async function validateRoster(user, rosterId) {
 }
 
 // Rounds are shared between the guards on the same shift: round 1 goes to the first guard, round 2 to the next, and so on.
-async function createRounds(client, rosterId) {
+// `notBefore` (optional) skips shifts that ended before that moment, so old rosters do not get rounds for the past.
+async function createRounds(client, rosterId, { notBefore } = {}) {
   const roster = (await client.query('SELECT * FROM rosters WHERE id = $1', [rosterId])).rows[0];
-  const shifts = (await client.query('SELECT id, guard_id, shift_template_id, to_char(shift_date, \'YYYY-MM-DD\') AS date, start_at, end_at FROM shifts WHERE roster_id = $1 ORDER BY id', [rosterId])).rows;
+  const shifts = (await client.query('SELECT id, guard_id, shift_template_id, to_char(shift_date, \'YYYY-MM-DD\') AS date, start_at, end_at FROM shifts WHERE roster_id = $1 AND status <> \'cancelled\' AND ($2::timestamptz IS NULL OR end_at >= $2) ORDER BY id', [rosterId, notBefore || null])).rows;
   const routes = (await client.query('SELECT * FROM routes WHERE site_id = $1 AND is_active ORDER BY id', [roster.site_id])).rows;
   let created = 0;
   for (const route of routes) {
@@ -137,14 +138,36 @@ async function createRounds(client, rosterId) {
         .sort((a, b) => a - b);
       for (let pos = 0; pos < rounds.length; pos += 1) {
         const shift = group[pos % group.length];
-        await client.query(
+        const done = await client.query(
           `INSERT INTO patrol_rounds (shift_id, route_id, round_index, window_start, window_end, scans_expected)
            VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (shift_id, route_id, round_index) DO NOTHING`,
           [shift.id, route.id, pos + 1, rounds[pos], new Date(rounds[pos].getTime() + route.max_round_minutes * 60000), count]);
-        created += 1;
+        created += done.rowCount;       // only rounds that were really added
       }
     }
   }
+  return created;
+}
+
+// A roster that was published BEFORE its site had a route (or before the route had checkpoints and round times) has no rounds,
+// so scans cannot count and the dashboard stays at 0. This builds the missing rounds. Safe to repeat: existing rounds are skipped.
+async function ensureRounds(rosterId, { notBefore } = {}) {
+  const roster = (await query('SELECT status FROM rosters WHERE id = $1', [rosterId])).rows[0];
+  if (!roster || roster.status !== 'published') return 0;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const created = await createRounds(client, rosterId, { notBefore });
+    await client.query('COMMIT');
+    return created;
+  } catch (e) { await client.query('ROLLBACK'); throw e; } finally { client.release(); }
+}
+
+async function ensureRoundsForSite(siteId, { notBefore } = {}) {
+  const since = notBefore || new Date(Date.now() - 24 * 3600 * 1000);
+  const { rows } = await query("SELECT id FROM rosters WHERE site_id = $1 AND status = 'published'", [siteId]);
+  let created = 0;
+  for (const r of rows) created += await ensureRounds(r.id, { notBefore: since });
   return created;
 }
 
@@ -197,4 +220,4 @@ async function myShifts(user, { from, to }) {
   return rows;
 }
 
-module.exports = { createRoster, listRosters, getRoster, addShift, removeShift, validateRoster, publish, unpublish, myShifts, createRounds, weekStartString };
+module.exports = { createRoster, listRosters, getRoster, addShift, removeShift, validateRoster, publish, unpublish, myShifts, createRounds, ensureRounds, ensureRoundsForSite, weekStartString };

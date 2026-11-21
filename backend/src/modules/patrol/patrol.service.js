@@ -7,6 +7,7 @@ const { notFound } = require('../../utils/errors');
 const { siteScope, assertSiteAccess } = require('../sites/access');
 const { listRoutes } = require('../sites/sites.service');
 const anomaly = require('../anomaly/anomaly.service');
+const rosterService = require('../roster/roster.service');
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MIN = 60000;
@@ -38,7 +39,7 @@ async function processScan(user, s) {
   }
 
   const shift = (await query(
-    `SELECT sh.id, sh.start_at, sh.end_at, r.site_id FROM shifts sh JOIN rosters r ON r.id = sh.roster_id AND r.status = 'published'
+    `SELECT sh.id, sh.roster_id, sh.start_at, sh.end_at, r.site_id FROM shifts sh JOIN rosters r ON r.id = sh.roster_id AND r.status = 'published'
       WHERE sh.id = $1 AND sh.guard_id = $2`, [s.shift_id, user.id])).rows[0];
   if (!shift) return { result: { client_scan_id: id, status: 'rejected', reason: 'NOT_YOUR_SHIFT' } };
 
@@ -58,10 +59,17 @@ async function processScan(user, s) {
   if (cp.site_id !== shift.site_id) return reject('WRONG_SITE');
   if (!cp.is_active) return reject('CHECKPOINT_INACTIVE');
 
-  const round = (await query(
+  const findRound = async () => (await query(
     `SELECT pr.id FROM patrol_rounds pr JOIN route_checkpoints rc ON rc.route_id = pr.route_id AND rc.checkpoint_id = $2
       WHERE pr.shift_id = $1 AND $3 >= pr.window_start - make_interval(mins => $4) AND $3 <= pr.window_end + make_interval(mins => $4)
       ORDER BY pr.window_start LIMIT 1`, [shift.id, cp.id, at, ROUND_GRACE_MIN])).rows[0];
+  let round = await findRound();
+  if (!round) {
+    // The roster may have been published before the site's route existed, so it has no rounds yet. Build them, then look again.
+    try {
+      if (await rosterService.ensureRounds(shift.roster_id, { notBefore: shift.start_at })) round = await findRound();
+    } catch (e) { console.error('Could not build rounds for roster', shift.roster_id, e.message); }
+  }
   await store(cp.id, round ? round.id : null, 'accepted', null);
   return { result: { client_scan_id: id, status: 'accepted', round_id: round ? round.id : null }, roundId: round ? round.id : null };
 }
@@ -77,6 +85,24 @@ async function processBatch(user, scans, now = new Date()) {
     try { await anomaly.evaluateRound(roundId, now); } catch (e) { console.error('Flag evaluation failed for round', roundId, e); }
   }
   return results;
+}
+
+// Scans that were saved without a round (the round did not exist yet) get attached to the round they belong to.
+// Returns the ids of the rounds that gained scans, so the caller can re-check them for flags.
+async function relinkOrphanScans({ since } = {}) {
+  const { rows } = await query(
+    `UPDATE scans sc SET round_id = m.round_id
+       FROM (SELECT s2.id AS scan_id,
+                    (SELECT pr.id FROM patrol_rounds pr JOIN route_checkpoints rc ON rc.route_id = pr.route_id AND rc.checkpoint_id = s2.checkpoint_id
+                      WHERE pr.shift_id = s2.shift_id
+                        AND s2.scanned_at >= pr.window_start - make_interval(mins => $1) AND s2.scanned_at <= pr.window_end + make_interval(mins => $1)
+                      ORDER BY pr.window_start LIMIT 1) AS round_id
+               FROM scans s2
+              WHERE s2.round_id IS NULL AND s2.validation_status = 'accepted' AND s2.checkpoint_id IS NOT NULL
+                AND ($2::timestamptz IS NULL OR s2.scanned_at >= $2)) m
+      WHERE sc.id = m.scan_id AND m.round_id IS NOT NULL
+      RETURNING sc.round_id`, [ROUND_GRACE_MIN, since || null]);
+  return [...new Set(rows.map((r) => r.round_id))];
 }
 
 // Who may look at a shift's route and rounds: its guard, or staff with access to the site.
@@ -123,4 +149,4 @@ async function getRound(user, roundId) {
   return { ...round, scans, flags };
 }
 
-module.exports = { processScan, processBatch, getShiftRoute, getShiftRounds, getRound, scanProblems };
+module.exports = { processScan, processBatch, relinkOrphanScans, getShiftRoute, getShiftRounds, getRound, scanProblems };

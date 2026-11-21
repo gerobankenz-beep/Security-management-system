@@ -181,6 +181,12 @@ async function replaceRouteParts(client, routeId, siteId, input) {
   }
 }
 
+// Rosters published earlier have no rounds for a route that is new or just changed. Build them now (best effort: the route is already saved).
+async function buildRoundsForPublishedRosters(siteId) {
+  try { await require('../roster/roster.service').ensureRoundsForSite(siteId); }
+  catch (e) { console.error('Could not build rounds for site', siteId, e.message); }
+}
+
 async function createRoute(actor, siteId, input) {
   const client = await pool.connect();
   try {
@@ -194,6 +200,7 @@ async function createRoute(actor, siteId, input) {
     const route = await loadRoute(client, rows[0].id);
     await client.query('COMMIT');
     await writeAudit({ userId: actor.id, action: 'CREATE', entityType: 'route', entityId: route.id });
+    await buildRoundsForPublishedRosters(siteId);
     return route;
   } catch (e) { await client.query('ROLLBACK'); throw e; } finally { client.release(); }
 }
@@ -216,6 +223,7 @@ async function updateRoute(actor, id, input) {
     const route = await loadRoute(client, id);
     await client.query('COMMIT');
     await writeAudit({ userId: actor.id, action: 'UPDATE', entityType: 'route', entityId: id, details: input });
+    await buildRoundsForPublishedRosters(existing.site_id);
     return route;
   } catch (e) { await client.query('ROLLBACK'); throw e; } finally { client.release(); }
 }
